@@ -11,8 +11,7 @@ public class LeftSidePanel extends JPanel {
 
 	private JComboBox<String> countryComboBox, regionComboBox;
 	private JTextField cityField;
-	private JCheckBox emailCheckBox, phoneCheckBox, suburbCheckBox, streetCheckBox, nameCheckBox,
-			planningCenterCheckBox;
+	private JCheckBox nameCheckBox, denominationCheckBox, addressCheckBox, phoneCheckBox, websiteCheckBox;
 	private JButton searchButton;
 
 	public LeftSidePanel() {
@@ -33,12 +32,12 @@ public class LeftSidePanel extends JPanel {
 		cityField = new JTextField(15);
 		cityField.setEnabled(false); // Initially disable the city field
 
-		emailCheckBox = new JCheckBox("Email", true);
-		phoneCheckBox = new JCheckBox("Phone Number", true);
-		suburbCheckBox = new JCheckBox("Suburb", true);
-		streetCheckBox = new JCheckBox("Street", true);
 		nameCheckBox = new JCheckBox("Name", true);
-		planningCenterCheckBox = new JCheckBox("Only Planning Center", true);
+//		emailCheckBox = new JCheckBox("Email", true);
+		denominationCheckBox = new JCheckBox("Denomination", true);
+		phoneCheckBox = new JCheckBox("Phonenumber", true);
+		addressCheckBox = new JCheckBox("Address", true);
+		websiteCheckBox = new JCheckBox("Website", true);
 
 		searchButton = new JButton("Search");
 		searchButton.setPreferredSize(new Dimension(150, 40));
@@ -51,12 +50,13 @@ public class LeftSidePanel extends JPanel {
 		add(regionComboBox, gbc);
 		add(new JLabel("City: "), gbc);
 		add(cityField, gbc);
-		add(emailCheckBox, gbc);
-		add(phoneCheckBox, gbc);
-		add(suburbCheckBox, gbc);
-		add(streetCheckBox, gbc);
+//		add(emailCheckBox, gbc);
+
 		add(nameCheckBox, gbc);
-		add(planningCenterCheckBox, gbc);
+		add(denominationCheckBox, gbc);
+		add(addressCheckBox, gbc);
+		add(phoneCheckBox, gbc);
+		add(websiteCheckBox, gbc);
 
 		gbc.weighty = 1.0;
 		gbc.anchor = GridBagConstraints.SOUTH;
@@ -70,7 +70,7 @@ public class LeftSidePanel extends JPanel {
 				regionComboBox.removeAllItems(); // Clear previous items
 				regionComboBox.setVisible(false); // Hide the region dropdown initially
 				cityField.setEnabled(false); // Disable the city field initially
-				
+
 				// Populate based on the selected country
 				if ("USA".equals(selectedCountry)) {
 					regionComboBox.setVisible(true);
@@ -104,7 +104,7 @@ public class LeftSidePanel extends JPanel {
 
 	// Getters for the input fields and search button
 	public String getCountryFieldText() {
-		 return countryComboBox.getSelectedItem().toString();
+		return countryComboBox.getSelectedItem().toString();
 	}
 
 	public String getRegionFieldText() {
@@ -120,28 +120,28 @@ public class LeftSidePanel extends JPanel {
 		return searchButton;
 	}
 
-	public boolean isEmailCheckBoxSelected() {
-		return emailCheckBox.isSelected();
-	}
+//	public boolean isEmailCheckBoxSelected() {
+//		return emailCheckBox.isSelected();
+//	}
 
-	public boolean isPhoneCheckBoxSelected() {
+	public boolean isPhoneNumberCheckBoxSelected() {
 		return phoneCheckBox.isSelected();
 	}
 
-	public boolean isSuburbCheckBoxSelected() {
-		return suburbCheckBox.isSelected();
+	public boolean isDenominationCheckBoxSelected() {
+		return denominationCheckBox.isSelected();
 	}
 
-	public boolean isStreetCheckBoxSelected() {
-		return streetCheckBox.isSelected();
+	public boolean isAddressCheckBoxSelected() {
+		return addressCheckBox.isSelected();
 	}
 
 	public boolean isNameCheckBoxSelected() {
 		return nameCheckBox.isSelected();
 	}
 
-	public boolean isPlanningCenterCheckBoxSelected() {
-		return planningCenterCheckBox.isSelected();
+	public boolean isWebsiteCheckBoxSelected() {
+		return websiteCheckBox.isSelected();
 	}
 
 	// Other getters as needed for form fields...

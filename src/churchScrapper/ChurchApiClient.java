@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -11,7 +13,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import churchScrapper.types.OverPassApiData;
-import churchScrapper.types.OverPassApiData.Element;
+import churchScrapper.types.OverPassTableData;
+
+import churchScrapper.helpers.StringHelpers;
 
 public class ChurchApiClient {
 
@@ -20,7 +24,94 @@ public class ChurchApiClient {
 	ObjectMapper objectMapper = new ObjectMapper();
 //	OverPassReturnType overPassReturnType = new OverPassReturnType();
 
-	public void apples() {
+//	public List<OverPassTableData> apples() {
+//		Config config = new Config();
+//		String latitude = "34.052235"; // Replace with your latitude
+//		String longitude = "-118.243683"; // Replace with your longitude
+//		String query = String.format(
+//				"%s?data=[out:json];node[\"amenity\"=\"place_of_worship\"][\"religion\"=\"christian\"](around:5000,%s,%s);out;",
+//				config.getOverPassAPIUrl(), latitude, longitude);
+//
+//		StringBuilder response = new StringBuilder();
+//		List<OverPassTableData> churchDataList = new ArrayList<>();
+//
+//		try {
+//			URL url = new URL(query);
+//			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//			conn.setRequestMethod("GET");
+//
+//			BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+//			String inputLine;
+//
+//			while ((inputLine = in.readLine()) != null) {
+//				response.append(inputLine);
+//			}
+//			in.close();
+//			// Deserialize the JSON response to a JsonNode
+////			JsonNode jsonResponse = objectMapper.readValue(response.toString(), overPassReturnType.getClass());
+//			OverPassApiData results = objectMapper.readValue(response.toString(), OverPassApiData.class);
+////			System.out.println(results.toString());
+//////			System.out.println(response.toString());
+////			String jsonResult = objectMapper.writeValueAsString(results);
+////	        System.out.println("Deserialized JSON Object: " + jsonResult);
+//
+////			OverPassReturnType over = new OverPassReturnType();
+////
+////			List<Element> trythis = results.getElements();
+////			
+////			Object[] mango = trythis.toArray();
+////			
+////			
+////
+////			System.out.print(mango.length);
+//
+//			StringHelpers capitilize = new StringHelpers();
+//
+//			// Map and create the new shape for table data
+//			for (OverPassApiData.Element element : results.getElements()) {
+//				OverPassApiData.Element.Tags tags = element.getTags();
+//				String name = tags.getName() != null ? tags.getName() : "No Name";
+//				String denomination = tags.getDenomination() != null
+//						? capitilize.capitalizeString(tags.getDenomination())
+//						: "Unknown";
+//				String address = String.format("%s, %s, %s, %s", tags.getAddrStreet(), tags.getAddrCity(),
+//						tags.getAddrState(), tags.getAddrPostcode());
+//				String website = tags.getWebsite() != null ? tags.getWebsite() : "No Website";
+//				String phoneNumber = tags.getPhone() != null ? tags.getPhone() : "No Number";
+//
+//				// Create a new ChurchTableData object
+//				OverPassTableData churchData = new OverPassTableData(name, denomination, address, website, phoneNumber);
+//				churchDataList.add(churchData);
+//			}
+//
+//			// Return the list of church data (you can change this based on your
+//			// requirement)
+//			for (OverPassTableData church : churchDataList) {
+//				System.out.println("Table Data: " + objectMapper.writeValueAsString(church));
+//			}
+//			return churchDataList;
+//
+//		} catch (JsonMappingException e) {
+//			System.err.println("Error mapping JSON to Church object: " + e.getMessage());
+//		} catch (JsonProcessingException e) {
+//			System.err.println("Error processing JSON: " + e.getMessage());
+//		} catch (Exception e) {
+//			System.err.println("An unexpected error occurred: " + e.getMessage());
+//		}
+////		catch (Exception e) {
+////			e.printStackTrace();
+////	    }
+//		return churchDataList;
+//
+////		 // Deserialize the JSON response to a JsonNode
+////        JsonNode jsonResponse = objectMapper.readTree(response.toString());
+////        System.out.println(jsonResponse);
+//
+////		System.out.print(jsonResponse);
+//
+//	};
+
+	public Object[][] apples() {
 		Config config = new Config();
 		String latitude = "34.052235"; // Replace with your latitude
 		String longitude = "-118.243683"; // Replace with your longitude
@@ -29,6 +120,7 @@ public class ChurchApiClient {
 				config.getOverPassAPIUrl(), latitude, longitude);
 
 		StringBuilder response = new StringBuilder();
+		List<OverPassTableData> churchDataList = new ArrayList<>();
 
 		try {
 			URL url = new URL(query);
@@ -42,40 +134,45 @@ public class ChurchApiClient {
 				response.append(inputLine);
 			}
 			in.close();
-			// Deserialize the JSON response to a JsonNode
-//			JsonNode jsonResponse = objectMapper.readValue(response.toString(), overPassReturnType.getClass());
+
+			// Deserialize the JSON response to OverPassApiData
 			OverPassApiData results = objectMapper.readValue(response.toString(), OverPassApiData.class);
-//			System.out.println(results.toString());
-////			System.out.println(response.toString());
-//			String jsonResult = objectMapper.writeValueAsString(results);
-//	        System.out.println("Deserialized JSON Object: " + jsonResult);
 
-//			OverPassReturnType over = new OverPassReturnType();
-//
-//			List<Element> trythis = results.getElements();
-//			
-//			Object[] mango = trythis.toArray();
-//			
-//			
-//
-//			System.out.print(mango.length);
-			
-			   for (OverPassApiData.Element element : results.getElements()) {
-		            // Accessing tags
-		            OverPassApiData.Element.Tags tags = element.getTags();
+			StringHelpers capitilize = new StringHelpers();
 
-		            // Example: Adding a new field (e.g., a dummy website for each church)
-		            String dummyWebsite = "http://example.com/" + tags.getName().replaceAll(" ", "_").toLowerCase();
-		            tags.setWebsite(dummyWebsite);
+			// Map and create the new shape for table data
+			for (OverPassApiData.Element element : results.getElements()) {
+				OverPassApiData.Element.Tags tags = element.getTags();
+				String name = tags.getName() != null ? tags.getName() : "";
+				String denomination = tags.getDenomination() != null
+						? capitilize.capitalizeString(tags.getDenomination())
+						: "";
+				String address = tags.getAddrCity() != null && tags.getAddrState() != null
+						? String.format("%s %s %s %s", tags.getAddrStreet(), tags.getAddrCity(), tags.getAddrState(),
+								tags.getAddrPostcode())
+						: "";
+				String phoneNumber = tags.getPhone() != null ? tags.getPhone() : "";
+				String website = tags.getWebsite() != null ? tags.getWebsite() : "";
 
-		            // Example: Mutate the denomination to upper case
-		            if (tags.getDenomination() != null) {
-		                tags.setDenomination(tags.getDenomination().toUpperCase());
-		            }
+				// Create a new OverPassTableData object
+				OverPassTableData churchData = new OverPassTableData(name, denomination, address, phoneNumber, website);
+				churchDataList.add(churchData);
+			}
 
-		            // Example: Log the modified element
-		            System.out.println("Modified Element: " + objectMapper.writeValueAsString(element));
-		        }
+			// Convert List<OverPassTableData> to Object[][]
+			Object[][] resultArray = new Object[churchDataList.size()][];
+			for (int i = 0; i < churchDataList.size(); i++) {
+				OverPassTableData churchData = churchDataList.get(i);
+				resultArray[i] = new Object[] { churchData.getName(), churchData.getDenomination(),
+						churchData.getAddress(), churchData.getPhoneNumber(), churchData.getWebsite() };
+			}
+
+			// Log the results
+			for (Object[] church : resultArray) {
+				System.out.println("Table Data: " + Arrays.toString(church));
+			}
+
+			return resultArray;
 
 		} catch (JsonMappingException e) {
 			System.err.println("Error mapping JSON to Church object: " + e.getMessage());
@@ -84,58 +181,11 @@ public class ChurchApiClient {
 		} catch (Exception e) {
 			System.err.println("An unexpected error occurred: " + e.getMessage());
 		}
-//		catch (Exception e) {
-//			e.printStackTrace();
-//	    }
 
-//		 // Deserialize the JSON response to a JsonNode
-//        JsonNode jsonResponse = objectMapper.readTree(response.toString());
-//        System.out.println(jsonResponse);
+		return new Object[0][]; // Return an empty 2D array in case of an error
+	}
 
-//		System.out.print(jsonResponse);
-
-	};
-
-//	public void apples() {
-//		String latitude = "34.052235"; // Replace with your latitude
-//		String longitude = "-118.243683"; // Replace with your longitude
-//		String query = String.format(
-//				"http://overpass-api.de/api/interpreter?data=[out:xml];node[\"amenity\"=\"place_of_worship\"][\"religion\"=\"christian\"](around:5000,%s,%s);out body;",
-//				latitude, longitude);
-//
-//		try {
-//			URL url = new URL(query);
-//			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//			conn.setRequestMethod("GET");
-//
-//			BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-//			String inputLine;
-//			StringBuilder response = new StringBuilder();
-//
-//			while ((inputLine = in.readLine()) != null) {
-//				response.append(inputLine);
-//			}
-//			in.close();
-//
-////			// Parse the JSON response
-////			JSONObject jsonResponse = new JSONObject(response.toString());
-////			JSONArray elements = jsonResponse.getJSONArray("elements");
-////
-////			for (int i = 0; i < elements.length(); i++) {
-////				JSONObject church = elements.getJSONObject(i);
-////				String name = church.optString("tags.name", "No name available");
-////				String website = church.optString("tags.website", "No website available");
-////
-////				System.out.println("Church Name: " + name);
-////				System.out.println("Website: " + website);
-////				System.out.println("------------------------------");
-////			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
-
-	public Object[] fetchChurchData(String city, String state, String country) {
+	public Object[][] fetchChurchData(String city, String state, String country) {
 //		StringBuilder response = new StringBuilder();
 //
 //		try {
@@ -163,17 +213,17 @@ public class ChurchApiClient {
 //			e.printStackTrace();
 //		}
 //		
-//		System.out.print(response.toString());
+//		System.out.print(apples());
+//
+//		// return response.toString(); // Return the raw response
+//
+//		// Create a sample row of data (this is where your web-scraping results will go)
+//		Object[] fullDummyData = { "Sample Suburb", "Sample Name", "sample@example.com", "123-456-7890",
+//				"123 Sample Street", "Yes" };
+//
+//		return fullDummyData;
 
-		// return response.toString(); // Return the raw response
-
-		apples();
-
-		// Create a sample row of data (this is where your web-scraping results will go)
-		Object[] fullDummyData = { "Sample Suburb", "Sample Name", "sample@example.com", "123-456-7890",
-				"123 Sample Street", "Yes" };
-
-		return fullDummyData;
+		return apples();
 
 	}
 

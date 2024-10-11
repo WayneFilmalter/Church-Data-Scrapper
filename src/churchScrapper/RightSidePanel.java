@@ -21,7 +21,7 @@ public class RightSidePanel extends JPanel {
 		add(cityHeader, BorderLayout.NORTH);
 
 		// Table for results
-		String[] columnNames = { "Suburb", "Name", "Email", "Phone", "Street", "Planning Center" };
+		String[] columnNames = { "Name",  "Denomination", "Address", "Phonenumber", "Website" };
 		tableModel = new DefaultTableModel(columnNames, 0);
 		JTable resultsTable = new JTable(tableModel);
 		JScrollPane scrollPane = new JScrollPane(resultsTable);
