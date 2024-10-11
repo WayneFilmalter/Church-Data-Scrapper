@@ -72,30 +72,30 @@ public class ChurchDataScrapper implements ActionListener {
 					}
 					break;
 				case "Denomination":
-					if (rowData.length > 2) {
-						dynamicRowData.add(rowData[2]); // Ensure index 2 is within bounds
+					if (rowData.length > 1) {
+						dynamicRowData.add(rowData[1]); // Ensure index 2 is within bounds
 					} else {
 						dynamicRowData.add("N/A"); // Default value if out of bounds
 					}
 					break;
 					
 				case "Address":
-					if (rowData.length > 3) {
-						dynamicRowData.add(rowData[3]); // Ensure index 3 is within bounds
+					if (rowData.length > 2) {
+						dynamicRowData.add(rowData[2]); // Ensure index 3 is within bounds
 					} else {
 						dynamicRowData.add("N/A"); // Default value if out of bounds
 					}
 					break;
 				case "Phonenumber":
-					if (rowData.length > 4) {
-						dynamicRowData.add(rowData[4]); // Ensure index 4 is within bounds
+					if (rowData.length > 3) {
+						dynamicRowData.add(rowData[3]); // Ensure index 4 is within bounds
 					} else {
 						dynamicRowData.add("N/A"); // Default value if out of bounds
 					}
 					break;
 				case "Website":
-					if (rowData.length > 5) {
-						dynamicRowData.add(rowData[5]); // Ensure index 5 is within bounds
+					if (rowData.length > 4) {
+						dynamicRowData.add(rowData[4]); // Ensure index 5 is within bounds
 					} else {
 						dynamicRowData.add("N/A"); // Default value if out of bounds
 					}
