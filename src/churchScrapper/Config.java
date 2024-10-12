@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import churchScrapper.types.OverPassApiData;
-
 public class Config {
 	private Properties properties = new Properties();
 
@@ -25,6 +23,14 @@ public class Config {
 
 	public String getOverPassAPIUrl() {
 		return properties.getProperty("OVERPASS_API_URL");
+	}
+	
+	public String getNominatimOpenStreetMapAPIUrl() {
+		return properties.getProperty("NOMINATIM_OPEN_STREET_MAP_API");
+	}
+	
+	public String getUserAgent() {
+		return properties.getProperty("USER_AGENT");
 	}
 
 	public String getApiToken() {

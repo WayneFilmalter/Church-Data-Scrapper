@@ -10,7 +10,7 @@ public class RightSidePanel extends JPanel {
 
 	private DefaultTableModel tableModel;
 	private JLabel cityHeader;
-	private JButton exportButton, saveButton, copyEmailsButton;
+	private JButton exportButton, saveButton, copyNumbersButton;
 
 	public RightSidePanel() {
 		setLayout(new BorderLayout());
@@ -30,17 +30,17 @@ public class RightSidePanel extends JPanel {
 		// Buttons at the bottom
 		JPanel buttonPanel = new JPanel();
 		exportButton = new JButton("Export to CSV");
-		saveButton = new JButton("Save");
-		copyEmailsButton = new JButton("Copy Emails");
+		saveButton = new JButton("Try Scrapping");
+		copyNumbersButton = new JButton("Copy Numbers");
 		
 		// Set Button Size
         exportButton.setPreferredSize(new Dimension(150, 40));
         saveButton.setPreferredSize(new Dimension(150, 40));
-        copyEmailsButton.setPreferredSize(new Dimension(150, 40));
+        copyNumbersButton.setPreferredSize(new Dimension(150, 40));
 
 		buttonPanel.add(exportButton);
 		buttonPanel.add(saveButton);
-		buttonPanel.add(copyEmailsButton);
+		buttonPanel.add(copyNumbersButton);
 		add(buttonPanel, BorderLayout.SOUTH);
 	}
 

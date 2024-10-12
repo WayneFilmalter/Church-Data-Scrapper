@@ -10,5 +10,12 @@ public class StringHelpers {
 		sb.setCharAt(0, Character.toUpperCase(sb.charAt(0)));
 		return sb.toString();
 	}
+	
+	public static String replaceSpacesWithPlus(String input) {
+        if (input == null || input.isEmpty()) {
+            return null;
+        }
+        return input.trim().replace(" ", "+");
+    }
 
 }

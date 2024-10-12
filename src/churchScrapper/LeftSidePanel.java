@@ -115,6 +115,10 @@ public class LeftSidePanel extends JPanel {
 	public String getCityFieldText() {
 		return cityField.getText();
 	}
+	
+	public JTextField getCityField() {
+		return cityField;
+	}
 
 	public JButton getSearchButton() {
 		return searchButton;
