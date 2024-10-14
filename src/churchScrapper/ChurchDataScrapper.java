@@ -63,6 +63,11 @@ public class ChurchDataScrapper implements ActionListener {
 			}
 
 			cityHeader.setText("Results for " + cityName);
+			
+		for (Object[] res : results) {
+			
+			System.out.print(res.toString());
+		};
 
 			for (Object[] rowData : results) { // Loop through each row in the results
 				List<Object> dynamicRowData = new ArrayList<>();

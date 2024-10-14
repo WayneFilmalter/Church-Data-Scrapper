@@ -12,4 +12,5 @@ module churchScrapper {
 	opens churchScrapper.types to com.fasterxml.jackson.databind;
 
 	requires com.fasterxml.jackson.annotation;
+	requires java.net.http;
 }

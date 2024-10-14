@@ -26,8 +26,7 @@ public class ChurchApiClient {
 		Config config = new Config();
 //		String latitude = "34.052235"; // Replace with your latitude
 //		String longitude = "-118.243683"; // Replace with your longitude
-		String query = String.format(
-				"%s?data=[out:json];node[\"amenity\"=\"place_of_worship\"](around:%s,%s,%s);out;",
+		String query = String.format("%s?data=[out:json];node[\"amenity\"=\"place_of_worship\"](around:%s,%s,%s);out;",
 				config.getOverPassAPIUrl(), range, String.valueOf(latitude), String.valueOf(longitude));
 
 		StringBuilder response = new StringBuilder();
@@ -49,6 +48,8 @@ public class ChurchApiClient {
 
 			// Deserialize the JSON response to OverPassApiData
 			OverPassApiData results = objectMapper.readValue(response.toString(), OverPassApiData.class);
+
+			MonkAPI.monkData();
 
 			StringHelpers capitilize = new StringHelpers();
 
@@ -80,9 +81,9 @@ public class ChurchApiClient {
 			}
 
 			// Log the results
-			for (Object[] church : resultArray) {
-				System.out.println("Table Data: " + Arrays.toString(church));
-			}
+//			for (Object[] church : resultArray) {
+//				System.out.println("Table Data: " + Arrays.toString(church));
+//			}
 
 			return resultArray;
 
