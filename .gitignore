@@ -1,2 +1,4 @@
 
 target/classes/config.properties
+target/classes/config.properties
+src/main/resources/config.properties
