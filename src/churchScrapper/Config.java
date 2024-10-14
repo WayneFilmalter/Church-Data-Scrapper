@@ -33,11 +33,12 @@ public class Config {
 		return properties.getProperty("USER_AGENT");
 	}
 
-	public String getApiToken() {
-		return properties.getProperty("API_TOKEN");
+	public String getGooglePlacesApiKey() {
+		return properties.getProperty("GOOOGLE_PLACES_API_KEY");
+	}
+	
+	public String getGooglePlacesUrl() {
+		return properties.getProperty("GOOOGLE_PLACES_API_URL");
 	}
 
-	public String getDbPassword() {
-		return properties.getProperty("DB_PASSWORD");
-	}
 }

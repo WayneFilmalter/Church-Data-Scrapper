@@ -49,7 +49,7 @@ public class ChurchApiClient {
 			// Deserialize the JSON response to OverPassApiData
 			OverPassApiData results = objectMapper.readValue(response.toString(), OverPassApiData.class);
 
-			MonkAPI.monkData();
+			GooglePlacesAPI.googlePlacesAPI();
 
 			StringHelpers capitilize = new StringHelpers();
 
