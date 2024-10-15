@@ -8,7 +8,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 import org.jsoup.Jsoup;
@@ -22,7 +21,7 @@ import churchDetailsFetcher.types.ChurchTableData;
 
 public class WebScraper {
 
-	public static void scrapeEmails(ChurchDataTableModel tableModel, Component parentComponent) {
+	public static void scrapeEmails(ChurchDataTableModel tableModel, Component parentComponent, Runnable onCompletion) {
 
 		List<ChurchTableData> churches = tableModel.getTableData(); // Assuming you have a method to get church data
 
@@ -76,7 +75,10 @@ public class WebScraper {
 				progressBarDialog.dispose(); // Close the progress dialog when scraping is complete
 
 				if (!progressBarDialog.isCancelled()) {
-					// Show the notification for 5 seconds
+
+					if (onCompletion != null) {
+						onCompletion.run(); // Trigger the PCO check
+					}	
 					SuccessDialog.showNotificationDialog(parentComponent, "Scraping found some data");
 				}
 			}

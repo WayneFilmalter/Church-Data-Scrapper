@@ -13,9 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
-import javax.swing.SwingWorker;
 
-import churchDetailsFetcher.dialog.ProgressBarDialog;
 import churchDetailsFetcher.types.ChurchDataTableModel;
 import churchDetailsFetcher.types.ChurchTableData;
 import churchDetailsFetcher.types.DataTypes.NameEmail;
@@ -65,9 +63,10 @@ public class RightSidePanel extends JPanel {
 		buttonPanel.add(copyEmailsButton);
 		buttonPanel.add(getPCOChurchesButton);
 		add(buttonPanel, BorderLayout.SOUTH);
-		
+
 		webScrapingButton.addActionListener(e -> {
-			WebScraper.scrapeEmails(tableModel, frame); // Show the progress bar
+			FindDenominations.scrapeDenominations(tableModel, frame, () -> WebScraper.scrapeEmails(tableModel, frame,
+					() -> CheckPlanningCenter.checkPlanningCenterLinks(tableModel, frame)));
 		});
 
 		saveNumbersButton.addActionListener(e -> {

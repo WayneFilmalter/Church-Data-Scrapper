@@ -94,7 +94,7 @@ public class ChurchDataTableModel extends AbstractTableModel {
 		return columnNames[actualColumnIndex];
 	}
 
-	public void addChurchData(ChurchTableData churchInfo) {
+	public void addTableData(ChurchTableData churchInfo) {
 		churchDataList.add(churchInfo);
 		fireTableRowsInserted(churchDataList.size() - 1, churchDataList.size() - 1);
 	}

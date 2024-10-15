@@ -69,7 +69,7 @@ public class ChurchFinder implements ActionListener {
 				churchData.setRating(church.getRating());
 				churchData.setUserRatingsTotal(church.getUserRatingsTotal());
 
-				tableModel.addChurchData(churchData);
+				tableModel.addTableData(churchData);
 			}
 
 		} else {
