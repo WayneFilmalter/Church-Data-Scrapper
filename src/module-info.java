@@ -9,7 +9,7 @@ module churchScrapper {
 	requires org.jsoup;
 	requires com.fasterxml.jackson.databind;
 
-	opens churchScrapper.types to com.fasterxml.jackson.databind;
+	opens churchDetailsFetcher.types to com.fasterxml.jackson.databind;
 
 	requires com.fasterxml.jackson.annotation;
 	requires java.net.http;
