@@ -121,7 +121,7 @@ public class GooglePlacesAPI {
 
 	public static List<GooglePlacesApiData> getChurchesInRange(Config config, GeoLongLat coordinates) {
 		String apiUrl = String.format("%stextsearch/json?query=churches&location=%f,%f&radius=%d&key=%s",
-				config.getGooglePlacesUrl(), coordinates.getLatitude(), coordinates.getLongitude(), 1000,
+				config.getGooglePlacesUrl(), coordinates.getLatitude(), coordinates.getLongitude(), 500,
 				config.getGooglePlacesApiKey());
 
 		List<GooglePlacesApiData> results = new ArrayList<>();

@@ -65,7 +65,7 @@ public class DataTypes {
 			return "Contacts{name=" + name + ", phoneNumber=" + phoneNumber + "}";
 		}
 	}
-	
+
 	public static class NameEmail {
 
 		private String name;

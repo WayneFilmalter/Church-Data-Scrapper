@@ -52,7 +52,7 @@ public class OverPassChurchFinder {
 				OverPassApiData.Element.Tags tags = element.getTags();
 				String name = tags.getName() != null ? tags.getName() : "";
 				String denomination = tags.getDenomination() != null
-						? capitilize.capitalizeString(tags.getDenomination())
+						? StringHelpers.capitalizeString(tags.getDenomination())
 						: "";
 				String address = tags.getAddrCity() != null && tags.getAddrState() != null
 						? String.format("%s %s %s %s", tags.getAddrStreet(), tags.getAddrCity(), tags.getAddrState(),

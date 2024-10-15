@@ -110,12 +110,16 @@ public class ChurchDataTableModel extends AbstractTableModel {
 	public boolean isColumnVisible(int columnIndex) {
 		return columnVisible[columnIndex];
 	}
+	
+	  public List<ChurchTableData> getTableData() {
+	        return churchDataList; // Return a copy of the list to prevent external modification
+	    }
 
 	public List<NamePhoneNumber> getNumbers() {
 		List<NamePhoneNumber> contacts = new ArrayList<>();
 		for (ChurchTableData churchData : churchDataList) {
 			String name = churchData.getName();
-			String email = churchData.getEmail();
+			String email = churchData.getPhoneNumber();
 			if (name != null && email != null) { // Ensure both name and email are not null
 				contacts.add(new NamePhoneNumber(name, email));
 			}

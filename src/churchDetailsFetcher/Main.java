@@ -33,7 +33,7 @@ public class Main {
         splitPane.setLeftComponent(leftPanel);
 
         // Add Right Panel (results table and buttons)
-        RightSidePanel rightPanel = new RightSidePanel();
+        RightSidePanel rightPanel = new RightSidePanel(frame);
         splitPane.setRightComponent(rightPanel);
 
         // Add functionality to the search button
