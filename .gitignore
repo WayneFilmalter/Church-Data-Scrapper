@@ -2,3 +2,26 @@
 target/classes/config.properties
 target/classes/config.properties
 src/main/resources/config.properties
+
+# Eclipse specific files
+.project
+.classpath
+.settings/
+
+# Compiled class files
+*.class
+
+# Maven / Gradle build directories
+target/
+build/
+
+# Log files
+*.log
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# Eclipse working directory
+.eclipse/
