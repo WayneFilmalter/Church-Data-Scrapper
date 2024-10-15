@@ -8,11 +8,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
+
+import churchDetailsFetcher.types.ChurchDataTableModel;
 
 public class CSVExporter {
 
-	public static void exportTableDataToCSV(DefaultTableModel tableModel, String cityName) {
+	public static void exportTableDataToCSV(ChurchDataTableModel tableModel, String cityName) {
 
 		String defaultPath = System.getProperty("user.home") + File.separator + "Documents";
 		String defaultFileName = generateDefaultFileName(cityName);

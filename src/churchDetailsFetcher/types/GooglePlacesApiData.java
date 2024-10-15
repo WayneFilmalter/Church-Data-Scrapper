@@ -25,7 +25,7 @@ public class GooglePlacesApiData {
 
 	@JsonProperty("user_ratings_total")
 	private String userRatingsTotal;
-	
+
 	private String email;
 
 	// Getters and setters
@@ -84,7 +84,7 @@ public class GooglePlacesApiData {
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
 	}
-	
+
 	public String getEmail() {
 		return email;
 	}
@@ -96,6 +96,6 @@ public class GooglePlacesApiData {
 	@Override
 	public String toString() {
 		return "Name: " + name + "\nAddress: " + address + "\nWebsite: " + website + "\nPhone: " + phoneNumber + "\n"
-				+ placeId + "\n" + rating + "\n" + userRatingsTotal + "\n" + "\nEmail: " +email;
+				+ placeId + "\n" + rating + "\n" + userRatingsTotal + "\n" + "\nEmail: " + email;
 	}
 }

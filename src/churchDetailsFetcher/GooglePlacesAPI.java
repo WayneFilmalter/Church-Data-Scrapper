@@ -20,8 +20,6 @@ public class GooglePlacesAPI {
 		System.out.print("Getting data from " + cityName);
 
 		Config config = new Config();
-		String apiUrl = String.format("%stextsearch/json?query=churches+in+%s&key=%s", config.getGooglePlacesUrl(),
-				cityName, config.getGooglePlacesApiKey());
 
 		List<GooglePlacesApiData> churches = getChurchesInRange(config, coordinates);
 
@@ -84,6 +82,7 @@ public class GooglePlacesAPI {
 			String geocodeUrl = String.format("https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=%s",
 					java.net.URLEncoder.encode(address, "UTF-8"), config.getGooglePlacesApiKey());
 
+			@SuppressWarnings("deprecation")
 			URL url = new URL(geocodeUrl);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setRequestMethod("GET");
@@ -97,7 +96,6 @@ public class GooglePlacesAPI {
 			in.close();
 			conn.disconnect();
 
-			// Parse the response to get lat/lng
 			ObjectMapper objectMapper = new ObjectMapper();
 			JsonNode rootNode = objectMapper.readTree(content.toString());
 			JsonNode resultsNode = rootNode.path("results");
@@ -132,6 +130,8 @@ public class GooglePlacesAPI {
 		try {
 			do {
 				String pagedUrl = nextPageToken != null ? apiUrl + "&pagetoken=" + nextPageToken : apiUrl;
+
+				@SuppressWarnings("deprecation")
 				URL url = new URL(pagedUrl);
 				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 				conn.setRequestMethod("GET");
@@ -155,7 +155,6 @@ public class GooglePlacesAPI {
 				System.out.print(rootNode.toString());
 				System.out.println("");
 
-				// Collect details from the API
 				if (resultsNode.isArray()) {
 					for (JsonNode place : resultsNode) {
 						GooglePlacesApiData church = objectMapper.treeToValue(place, GooglePlacesApiData.class);
