@@ -1,4 +1,4 @@
-package churchDetailsFetcher;
+package churchDetailsFetcher.utils;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -38,7 +38,7 @@ public class CSVExporter {
 				writer.newLine();
 			}
 			JOptionPane.showMessageDialog(null,
-					"Data exported successfully!\nSaved to: " + fileToSave.getAbsolutePath());
+					"Data exported successfully!\nSaved to: \n" + fileToSave.getAbsolutePath());
 		} catch (IOException ex) {
 			JOptionPane.showMessageDialog(null, "Error saving file: " + ex.getMessage());
 		}
