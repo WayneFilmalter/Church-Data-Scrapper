@@ -25,10 +25,11 @@ public class ChurchDataTableModel extends AbstractTableModel {
 	private List<ChurchTableData> churchDataList;
 	private boolean[] columnVisible; // An array to track column visibility
 	private String[] columnNames;
+	private boolean checkPCOdone;
 
 	// Constructor
 	public ChurchDataTableModel(List<ChurchTableData> churchData) {
-		this.churchDataList = churchData;
+		this.churchDataList = new ArrayList<>(churchData); // Create a mutable list from input
 		this.columnNames = new String[] { NAME_COLUMN, DENOMINATION_COLUMN, ADDRESS_COLUMN, PHONE_NUMBER_COLUMN,
 				WEBSITE_COLUMN, EMAIL_COLUMN, RATING_COLUMN, RATINGS_COUNT_COLUMN };
 		this.columnVisible = new boolean[columnNames.length];
@@ -108,7 +109,7 @@ public class ChurchDataTableModel extends AbstractTableModel {
 	}
 
 	public void setTableData(List<ChurchTableData> churchDataList) {
-		this.churchDataList = churchDataList; // Return a copy of the list to prevent external modification
+		this.churchDataList = churchDataList; 
 	}
 
 	public List<NamePhoneNumber> getNumbers() {
@@ -133,6 +134,14 @@ public class ChurchDataTableModel extends AbstractTableModel {
 			}
 		}
 		return contacts;
+	}
+
+	public boolean getCheckPCOdone() {
+		return checkPCOdone;
+	}
+
+	public void setCheckPCOdone(boolean checkPCOdone) {
+		this.checkPCOdone = checkPCOdone;
 	}
 
 	private Object getColumnValue(ChurchTableData churchData, int columnIndex) {

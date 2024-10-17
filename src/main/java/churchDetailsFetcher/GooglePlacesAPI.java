@@ -10,6 +10,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import churchDetailsFetcher.helpers.StringHelpers;
 import churchDetailsFetcher.types.DataTypes.GeoLongLat;
 import churchDetailsFetcher.types.GooglePlacesApiData;
 
@@ -62,8 +63,8 @@ public class GooglePlacesAPI {
 
 				GooglePlacesApiData churchDetails = new GooglePlacesApiData();
 				churchDetails.setPlaceId(placeId);
-				churchDetails.setName(resultNode.path("name").asText());
-				churchDetails.setAddress(resultNode.path("formatted_address").asText());
+				churchDetails.setName(StringHelpers.removeCommas(resultNode.path("name").asText()));
+				churchDetails.setAddress(StringHelpers.removeCommas(resultNode.path("formatted_address").asText()));
 				churchDetails.setPhoneNumber(resultNode.path("formatted_phone_number").asText());
 				churchDetails.setWebsite(resultNode.path("website").asText());
 				churchDetails.setEmail(resultNode.path("email").asText());
@@ -122,6 +123,7 @@ public class GooglePlacesAPI {
 		}
 
 		return coordinates;
+//		.setLocationRelativeTo(mainFrame); 
 	}
 
 	public static List<GooglePlacesApiData> getChurchesInRange(Config config, GeoLongLat coordinates, int range) {

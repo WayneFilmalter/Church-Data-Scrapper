@@ -41,25 +41,12 @@ public class ChurchFinder implements ActionListener {
 				countryName);
 
 		if (cityName != null && regionName != null && countryName != null && coordinates.getCityIsValid()) {
+			// Uncomment the API section to use Google Places API
 
 			GooglePlacesAPI googlePlacesAPI = new GooglePlacesAPI();
 			GeoLongLat cats = new GeoLongLat(coordinates.getLongitude(), coordinates.getLatitude());
 			List<GooglePlacesApiData> churches = googlePlacesAPI.googlePlacesAPI(cats, countryName, regionName,
 					cityName, range);
-
-			//			tableModel.clearData();
-
-			tableModel.setColumnVisible(ChurchDataTableModel.NAME_COLUMN, leftPanel.isNameCheckBoxSelected());
-			tableModel.setColumnVisible(ChurchDataTableModel.DENOMINATION_COLUMN,
-					leftPanel.isDenominationCheckBoxSelected());
-			tableModel.setColumnVisible(ChurchDataTableModel.ADDRESS_COLUMN, leftPanel.isAddressCheckBoxSelected());
-			tableModel.setColumnVisible(ChurchDataTableModel.PHONE_NUMBER_COLUMN,
-					leftPanel.isPhoneNumberCheckBoxSelected());
-			tableModel.setColumnVisible(ChurchDataTableModel.WEBSITE_COLUMN, leftPanel.isWebsiteCheckBoxSelected());
-			tableModel.setColumnVisible(ChurchDataTableModel.EMAIL_COLUMN, leftPanel.isEmailCheckBoxSelected());
-			tableModel.setColumnVisible(ChurchDataTableModel.RATING_COLUMN, leftPanel.isRatingCheckBoxSelected());
-			tableModel.setColumnVisible(ChurchDataTableModel.RATINGS_COUNT_COLUMN,
-					leftPanel.isUserRatingsTotalCheckBoxSelected());
 
 			cityHeader.setText("Results for " + StringHelpers.capitalizeString(cityName));
 
@@ -67,7 +54,7 @@ public class ChurchFinder implements ActionListener {
 				ChurchTableData churchData = new ChurchTableData();
 				churchData.setName(church.getName());
 				churchData.setDenomination("");
-				churchData.setAddress(church.getAddress());
+				churchData.setAddress(StringHelpers.removeCommas(church.getAddress()));
 				churchData.setPhoneNumber(church.getPhoneNumber());
 				churchData.setWebsite(church.getWebsite());
 				churchData.setEmail(church.getEmail());
@@ -77,10 +64,28 @@ public class ChurchFinder implements ActionListener {
 				tableModel.addTableData(churchData);
 			}
 
+			setTableColumnVisibility();
+			cityHeader.setText("Results for " + StringHelpers.capitalizeString(cityName));
+
 		} else {
 			InvalidErrorMessage.showInvalidCityPopup((JFrame) SwingUtilities.getWindowAncestor(leftPanel),
 					leftPanel.getCityField());
 			return;
 		}
 	}
+
+	private void setTableColumnVisibility() {
+		tableModel.setColumnVisible(ChurchDataTableModel.NAME_COLUMN, leftPanel.isNameCheckBoxSelected());
+		tableModel.setColumnVisible(ChurchDataTableModel.DENOMINATION_COLUMN,
+				leftPanel.isDenominationCheckBoxSelected());
+		tableModel.setColumnVisible(ChurchDataTableModel.ADDRESS_COLUMN, leftPanel.isAddressCheckBoxSelected());
+		tableModel.setColumnVisible(ChurchDataTableModel.PHONE_NUMBER_COLUMN,
+				leftPanel.isPhoneNumberCheckBoxSelected());
+		tableModel.setColumnVisible(ChurchDataTableModel.WEBSITE_COLUMN, leftPanel.isWebsiteCheckBoxSelected());
+		tableModel.setColumnVisible(ChurchDataTableModel.EMAIL_COLUMN, leftPanel.isEmailCheckBoxSelected());
+		tableModel.setColumnVisible(ChurchDataTableModel.RATING_COLUMN, leftPanel.isRatingCheckBoxSelected());
+		tableModel.setColumnVisible(ChurchDataTableModel.RATINGS_COUNT_COLUMN,
+				leftPanel.isUserRatingsTotalCheckBoxSelected());
+	}
+
 }

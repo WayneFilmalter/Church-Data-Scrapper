@@ -14,7 +14,7 @@ public class ChurchTableData {
 	private String phoneNumber;
 
 	private String userRatingsTotal;
-	
+
 	private String denomination;
 
 	private String email;
@@ -26,6 +26,8 @@ public class ChurchTableData {
 	private boolean hasPhoneNumber;
 
 	private boolean hasPCO;
+
+	private boolean checkPCOdone = false;
 
 	// Getters and setters
 	public String getName() {
@@ -43,7 +45,7 @@ public class ChurchTableData {
 	public void setPlaceId(String placeId) {
 		this.placeId = placeId;
 	}
-	
+
 	public String getDenomination() {
 		return denomination;
 	}
