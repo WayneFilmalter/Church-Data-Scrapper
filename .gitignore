@@ -39,3 +39,7 @@ bin/
 *.swp
 *~.nib
 src/main/resources/config.properties
+.vscode/tasks.json
+.vscode/settings.json
+ChurchDataFinder.ico
+ChurchDataFinder.webp
