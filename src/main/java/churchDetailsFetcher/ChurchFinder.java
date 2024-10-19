@@ -13,6 +13,7 @@ import churchDetailsFetcher.apiClients.LocationValidator;
 import churchDetailsFetcher.errorrMessages.InvalidErrorMessage;
 import churchDetailsFetcher.helpers.StringHelpers;
 import churchDetailsFetcher.panels.LeftSidePanel;
+import churchDetailsFetcher.panels.tabPanels.CityPanel;
 import churchDetailsFetcher.types.ChurchDataTableModel;
 import churchDetailsFetcher.types.ChurchTableData;
 import churchDetailsFetcher.types.DataTypes.GeoLongLat;
@@ -20,23 +21,23 @@ import churchDetailsFetcher.types.GooglePlacesApiData;
 import churchDetailsFetcher.types.LocationCoordinates;
 
 public class ChurchFinder implements ActionListener {
-	private LeftSidePanel leftPanel;
+	private CityPanel cityPanel;
 	private ChurchDataTableModel tableModel;
 	private JLabel cityHeader;
 
-	public ChurchFinder(LeftSidePanel leftPanel, ChurchDataTableModel tableModel, JLabel cityHeader) {
-		this.leftPanel = leftPanel;
+	public ChurchFinder(CityPanel cityPanel, ChurchDataTableModel tableModel, JLabel cityHeader) {
+		this.cityPanel = cityPanel;
 		this.tableModel = tableModel;
 		this.cityHeader = cityHeader;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		String cityName = leftPanel.getCityFieldText();
-		String regionName = leftPanel.getRegionFieldText();
-		String countryName = leftPanel.getCountryFieldText();
+		String cityName = cityPanel.getCityFieldText();
+		String regionName = cityPanel.getRegionFieldText();
+		String countryName = cityPanel.getCountryFieldText();
 
-		int range = leftPanel.getDistanceValue();
+		int range = cityPanel.getDistanceValue();
 
 		tableModel.clearData();
 
@@ -71,24 +72,24 @@ public class ChurchFinder implements ActionListener {
 			cityHeader.setText("Results for " + StringHelpers.capitalizeString(cityName));
 
 		} else {
-			InvalidErrorMessage.showInvalidCityPopup((JFrame) SwingUtilities.getWindowAncestor(leftPanel),
-					leftPanel.getCityField());
+			InvalidErrorMessage.showInvalidCityPopup((JFrame) SwingUtilities.getWindowAncestor(cityPanel),
+					cityPanel.getCityField());
 			return;
 		}
 	}
 
 	private void setTableColumnVisibility() {
-		tableModel.setColumnVisible(ChurchDataTableModel.NAME_COLUMN, leftPanel.isNameCheckBoxSelected());
+		tableModel.setColumnVisible(ChurchDataTableModel.NAME_COLUMN, cityPanel.isNameCheckBoxSelected());
 		tableModel.setColumnVisible(ChurchDataTableModel.DENOMINATION_COLUMN,
-				leftPanel.isDenominationCheckBoxSelected());
-		tableModel.setColumnVisible(ChurchDataTableModel.ADDRESS_COLUMN, leftPanel.isAddressCheckBoxSelected());
+				cityPanel.isDenominationCheckBoxSelected());
+		tableModel.setColumnVisible(ChurchDataTableModel.ADDRESS_COLUMN, cityPanel.isAddressCheckBoxSelected());
 		tableModel.setColumnVisible(ChurchDataTableModel.PHONE_NUMBER_COLUMN,
-				leftPanel.isPhoneNumberCheckBoxSelected());
-		tableModel.setColumnVisible(ChurchDataTableModel.WEBSITE_COLUMN, leftPanel.isWebsiteCheckBoxSelected());
-		tableModel.setColumnVisible(ChurchDataTableModel.EMAIL_COLUMN, leftPanel.isEmailCheckBoxSelected());
-		tableModel.setColumnVisible(ChurchDataTableModel.RATING_COLUMN, leftPanel.isRatingCheckBoxSelected());
+				cityPanel.isPhoneNumberCheckBoxSelected());
+		tableModel.setColumnVisible(ChurchDataTableModel.WEBSITE_COLUMN, cityPanel.isWebsiteCheckBoxSelected());
+		tableModel.setColumnVisible(ChurchDataTableModel.EMAIL_COLUMN, cityPanel.isEmailCheckBoxSelected());
+		tableModel.setColumnVisible(ChurchDataTableModel.RATING_COLUMN, cityPanel.isRatingCheckBoxSelected());
 		tableModel.setColumnVisible(ChurchDataTableModel.RATINGS_COUNT_COLUMN,
-				leftPanel.isUserRatingsTotalCheckBoxSelected());
+				cityPanel.isUserRatingsTotalCheckBoxSelected());
 	}
 
 }
