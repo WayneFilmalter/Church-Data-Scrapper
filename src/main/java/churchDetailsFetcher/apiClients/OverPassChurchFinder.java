@@ -1,4 +1,4 @@
-package churchDetailsFetcher;
+package churchDetailsFetcher.apiClients;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -11,6 +11,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import churchDetailsFetcher.Config;
 import churchDetailsFetcher.helpers.StringHelpers;
 import churchDetailsFetcher.types.OverPassApiData;
 import churchDetailsFetcher.types.TableData;

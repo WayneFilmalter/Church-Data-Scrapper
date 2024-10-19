@@ -6,6 +6,8 @@ import javax.swing.JFrame;
 import javax.swing.JSplitPane;
 import javax.swing.UIManager;
 
+import churchDetailsFetcher.panels.LeftSidePanel;
+import churchDetailsFetcher.panels.RightSidePanel;
 import churchDetailsFetcher.utils.CSVExporter;
 
 public class Main {

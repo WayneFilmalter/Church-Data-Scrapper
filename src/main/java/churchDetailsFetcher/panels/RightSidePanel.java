@@ -1,4 +1,4 @@
-package churchDetailsFetcher;
+package churchDetailsFetcher.panels;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -17,6 +17,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 
+import churchDetailsFetcher.apiClients.CheckPlanningCenter;
+import churchDetailsFetcher.apiClients.EmailsFromHunter;
+import churchDetailsFetcher.apiClients.FindDenominations;
+import churchDetailsFetcher.apiClients.HeadlessWebScraper;
+import churchDetailsFetcher.apiClients.StaticWebScraper;
 import churchDetailsFetcher.types.ChurchDataTableModel;
 import churchDetailsFetcher.types.ChurchTableData;
 import churchDetailsFetcher.types.DataTypes.NameEmail;

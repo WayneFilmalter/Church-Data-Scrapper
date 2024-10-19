@@ -1,4 +1,4 @@
-package churchDetailsFetcher;
+package churchDetailsFetcher.apiClients;
 
 import java.awt.Component;
 import java.io.BufferedReader;
@@ -15,6 +15,7 @@ import javax.swing.SwingWorker;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import churchDetailsFetcher.Config;
 import churchDetailsFetcher.dialog.ProgressBarDialog;
 import churchDetailsFetcher.helpers.StringHelpers;
 import churchDetailsFetcher.types.ChurchDataTableModel;

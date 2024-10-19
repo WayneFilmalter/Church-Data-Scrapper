@@ -1,4 +1,4 @@
-package churchDetailsFetcher;
+package churchDetailsFetcher.apiClients;
 
 import java.awt.Component;
 import java.io.IOException;
@@ -16,6 +16,8 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import churchDetailsFetcher.Config;
 import churchDetailsFetcher.dialog.ProgressBarDialog;
 import churchDetailsFetcher.types.ChurchDataTableModel;
 import churchDetailsFetcher.types.ChurchTableData;
@@ -103,7 +105,7 @@ public class EmailsFromHunter {
 
 	private static void findEmailsByDomain(String domain, Consumer<List<String>> onEmailsFound,
 			Consumer<Exception> onError) {
-//		List<String> emails = new ArrayList<>();
+		// List<String> emails = new ArrayList<>();
 		Config config = new Config();
 
 		String url = String.format("%s?domain=%s&api_key=%s", config.getHunterUrl(), domain, config.getHunterApiKey());
@@ -144,9 +146,9 @@ public class EmailsFromHunter {
 					onError.accept(e);
 				} finally {
 					// Close the response to ensure no connection is leaked
-//			        if (res != null) {
-//			            responseBody.close();  // Close the body if it was used
-//			        }
+					// if (res != null) {
+					// responseBody.close(); // Close the body if it was used
+					// }
 					response.body().close(); // Ensure response is closed
 				}
 			}

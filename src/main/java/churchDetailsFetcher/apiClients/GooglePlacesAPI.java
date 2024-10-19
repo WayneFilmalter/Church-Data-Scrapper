@@ -1,4 +1,4 @@
-package churchDetailsFetcher;
+package churchDetailsFetcher.apiClients;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -10,6 +10,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import churchDetailsFetcher.Config;
 import churchDetailsFetcher.helpers.StringHelpers;
 import churchDetailsFetcher.types.DataTypes.GeoLongLat;
 import churchDetailsFetcher.types.GooglePlacesApiData;
@@ -123,7 +124,7 @@ public class GooglePlacesAPI {
 		}
 
 		return coordinates;
-//		.setLocationRelativeTo(mainFrame); 
+		// .setLocationRelativeTo(mainFrame);
 	}
 
 	public static List<GooglePlacesApiData> getChurchesInRange(Config config, GeoLongLat coordinates, int range) {

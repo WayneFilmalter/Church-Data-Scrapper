@@ -8,8 +8,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
+import churchDetailsFetcher.apiClients.GooglePlacesAPI;
+import churchDetailsFetcher.apiClients.LocationValidator;
 import churchDetailsFetcher.errorrMessages.InvalidErrorMessage;
 import churchDetailsFetcher.helpers.StringHelpers;
+import churchDetailsFetcher.panels.LeftSidePanel;
 import churchDetailsFetcher.types.ChurchDataTableModel;
 import churchDetailsFetcher.types.ChurchTableData;
 import churchDetailsFetcher.types.DataTypes.GeoLongLat;

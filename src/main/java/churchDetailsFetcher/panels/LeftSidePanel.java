@@ -1,4 +1,4 @@
-package churchDetailsFetcher;
+package churchDetailsFetcher.panels;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -64,8 +64,9 @@ public class LeftSidePanel extends JPanel {
         searchButton.setBackground(new Color(0, 204, 153));
 
         // Spinner for distance range with a step of 10 km
-        SpinnerNumberModel distanceModel = new SpinnerNumberModel(10, 1, 500, 10); // Initial value: 10, min: 0, max: 500, step: 10
-      
+        SpinnerNumberModel distanceModel = new SpinnerNumberModel(10, 1, 500, 10); // Initial value: 10, min: 0, max:
+                                                                                   // 500, step: 10
+
         distanceSpinner = new JSpinner(distanceModel);
         distanceSpinner.setPreferredSize(new Dimension(50, 30)); // Set spinner size
 
@@ -76,7 +77,6 @@ public class LeftSidePanel extends JPanel {
                 ((JComponent) component).setPreferredSize(new Dimension(50, 50)); // Set button size
             }
         }
-        
 
         // Optionally, you can call revalidate() and repaint() to update the layout
         distanceSpinner.revalidate();

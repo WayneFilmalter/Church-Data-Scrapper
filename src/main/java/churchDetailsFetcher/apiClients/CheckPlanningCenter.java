@@ -1,4 +1,4 @@
-package churchDetailsFetcher;
+package churchDetailsFetcher.apiClients;
 
 import java.awt.Component;
 import java.io.IOException;
@@ -57,9 +57,11 @@ public class CheckPlanningCenter {
                                 if (checkPlanningCenterWithPlaywright(website)) {
                                     church.setHasPCO(true);
                                     found++;
-                                    System.out.println("Found Planning Center link for " + church.getName() + " using Playwright");
+                                    System.out.println(
+                                            "Found Planning Center link for " + church.getName() + " using Playwright");
                                 } else {
-                                    System.out.println("No Planning Center link found for " + church.getName() + " using Playwright");
+                                    System.out.println("No Planning Center link found for " + church.getName()
+                                            + " using Playwright");
                                 }
                             }
                         } catch (IOException e) {
@@ -99,7 +101,8 @@ public class CheckPlanningCenter {
         return containsPlanningCenter(doc);
     }
 
-    // Method to check if the document contains Planning Center links using Playwright
+    // Method to check if the document contains Planning Center links using
+    // Playwright
     private static boolean checkPlanningCenterWithPlaywright(String website) {
         try (Playwright playwright = Playwright.create()) {
             Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(true));

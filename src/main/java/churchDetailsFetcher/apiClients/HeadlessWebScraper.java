@@ -1,4 +1,4 @@
-package churchDetailsFetcher;
+package churchDetailsFetcher.apiClients;
 
 import java.awt.Component;
 import java.util.ArrayList;
@@ -60,7 +60,8 @@ public class HeadlessWebScraper {
                                 BrowserContext context = browser.newContext();
                                 Page page = context.newPage();
 
-                                page.navigate(website, new Page.NavigateOptions().setTimeout(90000)); // 30 seconds timeout
+                                page.navigate(website, new Page.NavigateOptions().setTimeout(90000)); // 30 seconds
+                                                                                                      // timeout
                                 String pageSource = page.content();
                                 List<String> emails = extractEmails(pageSource);
 
@@ -80,7 +81,8 @@ public class HeadlessWebScraper {
                                 logError(errorMessage);
 
                             } catch (TargetClosedError tce) {
-                                String errorMessage = "Error connecting to " + website + ": Browser or page closed unexpectedly: " + tce.getMessage();
+                                String errorMessage = "Error connecting to " + website
+                                        + ": Browser or page closed unexpectedly: " + tce.getMessage();
                                 logError(errorMessage);
 
                             } catch (Exception e) {
