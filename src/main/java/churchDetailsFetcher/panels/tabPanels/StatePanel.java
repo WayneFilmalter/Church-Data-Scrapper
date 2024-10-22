@@ -96,15 +96,6 @@ public class StatePanel extends JPanel {
             }
         });
 
-        searchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                SearchChurchesByState.getAllChurchesByRegion(stateComboBox.getSelectedItem().toString(),
-                        countryComboBox.getSelectedItem().toString(),
-
-                        new JFrame());
-            }
-        });
     }
 
     // Getters for the input fields and search button

@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import churchDetailsFetcher.types.ChurchDataTableModel;
+import churchDetailsFetcher.types.ChurchTableData;
 import churchDetailsFetcher.types.DataTypes.GeoLongLat;
 import churchDetailsFetcher.types.GooglePlacesApiData;
 import churchDetailsFetcher.types.LocationCoordinates;
@@ -29,20 +31,23 @@ import java.net.URL;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+import churchDetailsFetcher.apiClients.GooglePlacesAPI;
 import churchDetailsFetcher.apiClients.LocationData;
 import churchDetailsFetcher.apiClients.LocationValidator;
+import churchDetailsFetcher.helpers.StringHelpers;
 import churchDetailsFetcher.types.GooglePlacesApiData;
 
 public class SearchChurchesByState {
 
     // TODO: add boolean vals for selected functions
-    public static void getAllChurchesByRegion(String regionName, String countryName,
+    public static void getAllChurchesByRegion(ChurchDataTableModel tableModel, JLabel cityHeader, String regionName,
+            String countryName,
             JFrame frame) {
 
         System.out.println("Start get all churches by region....");
 
         System.out.println(regionName + "  :  " + countryName);
-        List<OverPassApiData.Element> cities = LocationData.getCitiesForState(frame, countryName, regionName);
+        List<OverPassApiData.Element> cities = LocationData.getCitiesForState(countryName, regionName);
 
         // for (String city : cities) {
         // System.out.println(countryName + regionName + city);
@@ -53,7 +58,34 @@ public class SearchChurchesByState {
 
         // }
 
-        getBaseChurchData(cities, regionName, countryName, new Config());
+        System.out.println("Getting basic data for churches");
+
+        List<GooglePlacesApiData> churches = getBaseChurchData(cities, regionName, countryName, new Config());
+
+        System.out.println("getting detailed data for churches");
+
+        List<GooglePlacesApiData> detailedChurchData = GooglePlacesAPI.getChurchDetails(new Config(), churches);
+
+        if (detailedChurchData != null) {
+            for (GooglePlacesApiData church : churches) {
+                ChurchTableData churchData = new ChurchTableData();
+                churchData.setName(church.getName());
+                churchData.setDenomination("");
+                churchData.setAddress(StringHelpers.removeCommas(church.getAddress()));
+                churchData.setPhoneNumber(church.getPhoneNumber());
+                churchData.setWebsite(church.getWebsite());
+                churchData.setEmail(church.getEmail());
+                churchData.setRating(church.getRating());
+                churchData.setUserRatingsTotal(church.getUserRatingsTotal());
+
+                tableModel.addTableData(churchData);
+            }
+
+            // setTableColumnVisibility();
+            cityHeader.setText("Results for " + StringHelpers.capitalizeString(regionName));
+        }
+
+        System.out.println("Data retrived");
 
         System.out.println("End get all churches by region....");
 

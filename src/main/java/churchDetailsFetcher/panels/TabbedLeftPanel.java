@@ -14,6 +14,7 @@ public class TabbedLeftPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
     private CityPanel cityPanel; // Instance variable
+    private StatePanel statePanel;
 
     public TabbedLeftPanel() {
         setLayout(new BorderLayout());
@@ -23,7 +24,7 @@ public class TabbedLeftPanel extends JPanel {
 
         // Initialize the instance variable instead of creating a new local variable
         cityPanel = new CityPanel(); // Assign to the instance variable
-        StatePanel statePanel = new StatePanel(); // New State panel
+        statePanel = new StatePanel(); // New State panel
         UnknownPanel unknownPanel = new UnknownPanel(); // New Unknown panel
         HistoryPanel historyPanel = new HistoryPanel(); // New History panel
 
@@ -42,6 +43,10 @@ public class TabbedLeftPanel extends JPanel {
 
     public CityPanel getCityPanel() {
         return cityPanel; // Return the instance of CityPanel
+    }
+
+    public StatePanel getStatePanel() {
+        return statePanel; // Return the instance of CityPanel
     }
 
     // You may want to add methods to access components in the CityPanel

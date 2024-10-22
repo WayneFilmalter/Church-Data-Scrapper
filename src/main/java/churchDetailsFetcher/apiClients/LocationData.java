@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 public class LocationData {
 
-    public static List<OverPassApiData.Element> getCitiesForState(JFrame frame, String countryName, String regionName) {
+    public static List<OverPassApiData.Element> getCitiesForState(String countryName, String regionName) {
         try {
             // Expanded Overpass API query to include towns, villages, and suburbs
             String query = String.format(

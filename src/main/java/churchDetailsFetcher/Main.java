@@ -8,6 +8,7 @@ import javax.swing.UIManager;
 import churchDetailsFetcher.panels.RightSidePanel;
 import churchDetailsFetcher.panels.TabbedLeftPanel;
 import churchDetailsFetcher.panels.tabPanels.CityPanel;// Import CityPanel directly
+import churchDetailsFetcher.panels.tabPanels.StatePanel;
 import churchDetailsFetcher.utils.CSVExporter;
 
 public class Main {
@@ -42,20 +43,40 @@ public class Main {
 
 			// Add functionality to the CityPanel's search button
 			CityPanel cityPanel = leftPanel.getCityPanel();
+			StatePanel statePanel = leftPanel.getStatePanel();
+
 			if (cityPanel != null) {
-				cityPanel.getSearchButton()
-						.addActionListener(
-								new ChurchFinder(cityPanel, rightPanel.getTableModel(), rightPanel.getCityHeader()));
+				cityPanel.getSearchButton().addActionListener(
+						new ChurchFinder(cityPanel, rightPanel.getTableModel(), rightPanel.getCityHeader()));
 			} else {
 				System.err.println("CityPanel is null");
 			}
+
+			if (statePanel != null) {
+				statePanel.getSearchButton().addActionListener(
+						new ChurchFinderByState(statePanel, rightPanel.getTableModel(), rightPanel.getCityHeader()));
+			} else {
+				System.err.println("StatePanel is null");
+			}
+
+			// if (statePanel != null) {
+			// statePanel.getSearchButton()
+			// .addActionListener(
+			// new ChurchFinderByState(
+			// statePanel,
+			// rightPanel.getTableModel(),
+			// rightPanel.getCityHeader()));
+
+			// } else {
+			// System.err.println("CityPanel is null");
+			// }
 
 			// Action Listener for the Export Button
 			rightPanel.getExportButton().addActionListener(
 					e -> CSVExporter.exportTableDataToCSV(rightPanel.getTableModel(), cityPanel.getCityFieldText(),
 							frame));
 
-			// Display the frame
+			// Display the framea wha
 			frame.setVisible(true);
 		});
 	}

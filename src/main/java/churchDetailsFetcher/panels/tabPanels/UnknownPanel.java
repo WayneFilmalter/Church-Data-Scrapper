@@ -1,10 +1,13 @@
 package churchDetailsFetcher.panels.tabPanels;
 
+import java.util.List;
+
 import javax.swing.*;
 
 import org.openqa.selenium.Dimension;
 
 import churchDetailsFetcher.apiClients.LocationData;
+import churchDetailsFetcher.types.OverPassApiData;
 
 public class UnknownPanel extends JPanel {
     public UnknownPanel() {
@@ -17,14 +20,13 @@ public class UnknownPanel extends JPanel {
 
         button.addActionListener(e -> {
             System.out.println("Start ");
-            // String[] cities = LocationData.getCitiesForState(frame, "South Africa", "Free
-            // State");
+            List<OverPassApiData.Element> cities = LocationData.getCitiesForState("South Africa", "Free State");
 
             System.out.println("Done ");
-            // for (String city : cities) {
+            for (OverPassApiData.Element city : cities) {
 
-            // System.out.println(city.toString());
-            // }
+                System.out.println(city.getTags().getName());
+            }
         });
     }
 }
