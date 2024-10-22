@@ -10,9 +10,11 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import churchDetailsFetcher.SearchChurchesByState;
 import churchDetailsFetcher.data.CountryData;
 
 public class StatePanel extends JPanel {
@@ -45,9 +47,13 @@ public class StatePanel extends JPanel {
 
         // Checkboxes for the data options (using the specified checkboxes)
         denominationCheckBox = new JCheckBox("Denomination");
+        denominationCheckBox.setSelected(true);
         webScrapingCheckBox = new JCheckBox("Web Scraping");
+        webScrapingCheckBox.setSelected(true);
         hunterEmailsCheckBox = new JCheckBox("Hunter Emails");
+        hunterEmailsCheckBox.setSelected(true);
         pcoCheckBox = new JCheckBox("PCO Check");
+        pcoCheckBox.setSelected(true);
 
         // Add components
         add(new JLabel("Country: "), gbc);
@@ -87,6 +93,16 @@ public class StatePanel extends JPanel {
                 } else {
                     stateComboBox.setVisible(false);
                 }
+            }
+        });
+
+        searchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SearchChurchesByState.getAllChurchesByRegion(stateComboBox.getSelectedItem().toString(),
+                        countryComboBox.getSelectedItem().toString(),
+
+                        new JFrame());
             }
         });
     }

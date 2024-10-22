@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import churchDetailsFetcher.types.OverPassApiData.Osm3s;
+
 //@JsonIgnoreProperties(ignoreUnknown = true)
 public class OverPassApiData {
 	private double version;
@@ -46,6 +48,7 @@ public class OverPassApiData {
 		this.elements = elements;
 	}
 
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	public static class Osm3s {
 		@JsonProperty("timestamp_osm_base")
 		private String timestampOsmBase;
@@ -136,6 +139,9 @@ public class OverPassApiData {
 
 			@JsonProperty("religion")
 			private String religion;
+
+			@JsonProperty("place")
+			private String place;
 
 			@JsonProperty("wikidata")
 			private String wikidata;
@@ -363,6 +369,14 @@ public class OverPassApiData {
 
 			public void setNameEN(String nameEn) {
 				this.nameEn = nameEn; // Correct setter for fixme
+			}
+
+			public String getPlace() {
+				return place;
+			}
+
+			public void setPlace(String place) {
+				this.place = place;
 			}
 
 		}

@@ -119,12 +119,13 @@ public class RightSidePanel extends JPanel {
 			}
 		});
 
-		getPCOChurchesButton.addActionListener(e -> {
-			List<ChurchTableData> allChurches = tableModel.getTableData();
-			List<ChurchTableData> pcoChurches = allChurches.stream().filter(ChurchTableData::getHasPCO).toList();
-			tableModel.setTableData(pcoChurches);
-			tableModel.fireTableDataChanged();
-		});
+		// getPCOChurchesButton.addActionListener(e -> {
+		// List<ChurchTableData> allChurches = tableModel.getTableData();
+		// List<ChurchTableData> pcoChurches =
+		// allChurches.stream().filter(ChurchTableData::getHasPCO).toList();
+		// tableModel.setTableData(pcoChurches);
+		// tableModel.fireTableDataChanged();
+		// });
 	}
 
 	private void showFunctionSelectionDialog(JFrame frame) {

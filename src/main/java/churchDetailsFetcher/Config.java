@@ -19,16 +19,15 @@ public class Config {
 			ex.printStackTrace();
 		}
 	}
-	
 
 	public String getOverPassAPIUrl() {
 		return properties.getProperty("OVERPASS_API_URL");
 	}
-	
+
 	public String getNominatimOpenStreetMapAPIUrl() {
 		return properties.getProperty("NOMINATIM_OPEN_STREET_MAP_API");
 	}
-	
+
 	public String getUserAgent() {
 		return properties.getProperty("USER_AGENT");
 	}
@@ -36,17 +35,21 @@ public class Config {
 	public String getGooglePlacesApiKey() {
 		return properties.getProperty("GOOGLE_PLACES_API_KEY");
 	}
-	
+
 	public String getGooglePlacesUrl() {
 		return properties.getProperty("GOOGLE_PLACES_API_URL");
 	}
-	
+
 	public String getHunterUrl() {
 		return properties.getProperty("HUNTER_URL");
 	}
-	
+
 	public String getHunterApiKey() {
 		return properties.getProperty("HUNTER_API_KEY");
+	}
+
+	public int getThreadPoolSize() {
+		return Integer.valueOf(properties.getProperty("THREAD_POOL_SIZE"));
 	}
 
 }

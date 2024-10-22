@@ -2,8 +2,10 @@ package churchDetailsFetcher.apiClients;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -124,13 +126,16 @@ public class GooglePlacesAPI {
 		}
 
 		return coordinates;
-		// .setLocationRelativeTo(mainFrame);
 	}
 
 	public static List<GooglePlacesApiData> getChurchesInRange(Config config, GeoLongLat coordinates, int range) {
 		String apiUrl = String.format("%stextsearch/json?query=churches&location=%f,%f&radius=%d&key=%s",
-				config.getGooglePlacesUrl(), coordinates.getLatitude(), coordinates.getLongitude(), range,
+				config.getGooglePlacesUrl(), coordinates.getLatitude(),
+				coordinates.getLongitude(), range,
 				config.getGooglePlacesApiKey());
+
+		// Print the final API URL for debugging
+		System.out.println("Request URL: " + apiUrl);
 
 		List<GooglePlacesApiData> results = new ArrayList<>();
 		String nextPageToken = null;
