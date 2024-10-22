@@ -3,6 +3,9 @@ package churchDetailsFetcher.apiClients;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,12 +40,14 @@ public class HeadlessWebScraper {
         ProgressBarDialog progressBarDialog = new ProgressBarDialog((JFrame) parentComponent, "Scraping for emails...");
         progressBarDialog.setProgressMax(churchesToScrape.size());
 
-        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+        int threads = Runtime.getRuntime().availableProcessors();
 
+        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() {
-                int progress = 0;
-                int found = 0;
+                ExecutorService executorService = Executors.newFixedThreadPool(threads);
+                List<Future<?>> futures = new ArrayList<>();
+                int foundEmailCount = 0;
 
                 try (Playwright playwright = Playwright.create()) {
                     Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(true));
@@ -55,58 +60,59 @@ public class HeadlessWebScraper {
 
                         String website = church.getWebsite();
                         if (website != null && !website.isEmpty()) {
-                            try {
-                                // Create a new context and page for each church to avoid closed target issues
-                                BrowserContext context = browser.newContext();
-                                Page page = context.newPage();
+                            futures.add(executorService.submit(() -> {
+                                try {
+                                    // Create a new context and page for each church to avoid closed target issues
+                                    BrowserContext context = browser.newContext();
+                                    Page page = context.newPage();
 
-                                page.navigate(website, new Page.NavigateOptions().setTimeout(90000)); // 30 seconds
-                                                                                                      // timeout
-                                String pageSource = page.content();
-                                List<String> emails = extractEmails(pageSource);
+                                    page.navigate(website, new Page.NavigateOptions().setTimeout(90000)); // 90 seconds
+                                                                                                          // timeout
+                                    String pageSource = page.content();
+                                    List<String> emails = extractEmails(pageSource);
 
-                                if (!emails.isEmpty()) {
-                                    church.setEmail(String.join(", ", emails));
-                                    church.setHasEmail(true);
-                                    found++;
-                                    System.out.println("Found emails for " + church.getName() + ": " + emails);
-                                } else {
-                                    System.out.println("No email found for " + church.getName());
+                                    if (!emails.isEmpty()) {
+                                        church.setEmail(String.join(", ", emails));
+                                        church.setHasEmail(true);
+                                        System.out.println("Found emails for " + church.getName() + ": " + emails);
+                                    } else {
+                                        System.out.println("No email found for " + church.getName());
+                                    }
+
+                                    context.close(); // Close the context after use
+
+                                } catch (TimeoutError te) {
+                                    String errorMessage = "Timeout while connecting to " + website + ": "
+                                            + te.getMessage();
+                                    logError(errorMessage);
+                                } catch (TargetClosedError tce) {
+                                    String errorMessage = "Error connecting to " + website
+                                            + ": Browser or page closed unexpectedly: " + tce.getMessage();
+                                    logError(errorMessage);
+                                } catch (Exception e) {
+                                    String errorMessage = "Error connecting to " + website + ": " + e.getMessage();
+                                    logError(errorMessage);
                                 }
-
-                                context.close(); // Close the context after use
-
-                            } catch (TimeoutError te) {
-                                String errorMessage = "Timeout while connecting to " + website + ": " + te.getMessage();
-                                logError(errorMessage);
-
-                            } catch (TargetClosedError tce) {
-                                String errorMessage = "Error connecting to " + website
-                                        + ": Browser or page closed unexpectedly: " + tce.getMessage();
-                                logError(errorMessage);
-
-                            } catch (Exception e) {
-                                String errorMessage = "Error connecting to " + website + ": " + e.getMessage();
-                                logError(errorMessage);
-                            }
+                            }));
                         } else {
                             System.out.println("No website provided for " + church.getName());
                         }
+                    }
 
-                        progress++;
-                        progressBarDialog.updateProgress(progress, found, churchesToScrape.size());
+                    // Wait for all tasks to complete and update progress
 
-                        try {
-                            Thread.sleep(1000); // Avoid getting blocked by websites
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                            System.out.println("Sleep interrupted: " + e.getMessage());
-                        }
+                    for (Future<?> future : futures) {
+                        future.get(); // Blocking call
+                        // Update progress based on found emails
+                        foundEmailCount++; // Increment for each completed task
+                        progressBarDialog.updateProgress(1, foundEmailCount, churchesToScrape.size());
                     }
 
                     browser.close();
                 } catch (Exception e) {
                     System.out.println("Error during scraping: " + e.getMessage());
+                } finally {
+                    executorService.shutdown();
                 }
 
                 return null;
@@ -141,11 +147,31 @@ public class HeadlessWebScraper {
     }
 
     private static void extractEmailsFromText(String text, List<String> emails) {
+        // Regex for standard emails
         Pattern emailPattern = Pattern.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}");
         Matcher matcher = emailPattern.matcher(text);
         while (matcher.find()) {
             String email = matcher.group();
             cleanEmail(email, emails);
+        }
+
+        // Regex for emails in specific HTML structures
+        extractEmailsFromHtmlPatterns(text, emails);
+    }
+
+    private static void extractEmailsFromHtmlPatterns(String text, List<String> emails) {
+        // Pattern for emails inside specific HTML structures
+        String[] patterns = {
+                "<span[^>]*>([^<]*)</span>",
+                "<a href=\"mailto:([^\"+]*)\"[^>]*>([^<]*)</a>"
+        };
+
+        for (String pattern : patterns) {
+            Matcher matcher = Pattern.compile(pattern).matcher(text);
+            while (matcher.find()) {
+                String email = matcher.group(1);
+                cleanEmail(email, emails);
+            }
         }
     }
 

@@ -14,7 +14,6 @@ import churchDetailsFetcher.types.GooglePlacesApiData;
 import churchDetailsFetcher.types.LocationCoordinates;
 import churchDetailsFetcher.types.OverPassApiData;
 
-import javax.swing.JFrame;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -67,7 +66,7 @@ public class SearchChurchesByState {
         List<GooglePlacesApiData> detailedChurchData = GooglePlacesAPI.getChurchDetails(new Config(), churches);
 
         if (detailedChurchData != null) {
-            for (GooglePlacesApiData church : churches) {
+            for (GooglePlacesApiData church : detailedChurchData) {
                 ChurchTableData churchData = new ChurchTableData();
                 churchData.setName(church.getName());
                 churchData.setDenomination("");
@@ -94,8 +93,9 @@ public class SearchChurchesByState {
     public static List<GooglePlacesApiData> getBaseChurchData(List<OverPassApiData.Element> cities, String regionName,
             String countryName, Config config) {
 
+        int threads = Runtime.getRuntime().availableProcessors();
         List<GooglePlacesApiData> combinedResults = new ArrayList<>();
-        ExecutorService executor = Executors.newFixedThreadPool(config.getThreadPoolSize());
+        ExecutorService executor = Executors.newFixedThreadPool(threads);
 
         System.out.println("Starting threads");
 

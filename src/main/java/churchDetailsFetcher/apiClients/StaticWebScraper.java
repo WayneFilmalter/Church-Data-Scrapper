@@ -4,6 +4,9 @@ import java.awt.Component;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,48 +24,60 @@ import churchDetailsFetcher.types.ChurchTableData;
 public class StaticWebScraper {
 
     public static void scrapeEmails(ChurchDataTableModel tableModel, Component parentComponent, Runnable onCompletion) {
-        List<ChurchTableData> churches = tableModel.getTableData(); // Assuming you have a method to get church data
-
-        // Create and display the custom ProgressBarDialog
+        List<ChurchTableData> churches = tableModel.getTableData();
         ProgressBarDialog progressBarDialog = new ProgressBarDialog((JFrame) parentComponent, "Scraping for emails...");
         progressBarDialog.setProgressMax(churches.size());
 
-        // Use SwingWorker to handle background scraping process
+        int threads = Runtime.getRuntime().availableProcessors();
+        ExecutorService executorService = Executors.newFixedThreadPool(threads);
+
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() {
-                int progress = 0;
-                int found = 0;
+                int[] progress = { 0 };
+                int[] found = { 0 };
 
                 for (ChurchTableData church : churches) {
                     if (progressBarDialog.isCancelled()) {
                         System.out.println("Scraping canceled.");
-                        break; // Exit the loop if scraping is canceled
+                        break;
                     }
 
-                    String website = church.getWebsite();
-                    if (website != null && !website.isEmpty() && !church.getHasEmail()) {
-                        try {
-                            Document doc = Jsoup.connect(website).get();
-                            List<String> emails = extractEmails(doc);
-                            if (!emails.isEmpty()) {
-                                church.setEmail(String.join(", ", emails)); // Update email in the church data
-                                church.setHasEmail(true);
-                                found++;
-                                System.out.println("Found emails for " + church.getName() + ": " + emails);
-                            } else {
-                                System.out.println("No email found for " + church.getName());
+                    executorService.submit(() -> {
+                        String website = church.getWebsite();
+                        if (website != null && !website.isEmpty() && !church.getHasEmail()) {
+                            try {
+                                Document doc = Jsoup.connect(website).get();
+                                List<String> emails = extractEmails(doc);
+                                if (!emails.isEmpty()) {
+                                    church.setEmail(String.join(", ", emails));
+                                    church.setHasEmail(true);
+                                    synchronized (found) {
+                                        found[0]++;
+                                    }
+                                    System.out.println("Found emails for " + church.getName() + ": " + emails);
+                                } else {
+                                    System.out.println("No email found for " + church.getName());
+                                }
+                            } catch (IOException e) {
+                                logError("Error connecting to " + website + ": " + e.getMessage());
                             }
-                        } catch (IOException e) {
-                            logError("Error connecting to " + website + ": " + e.getMessage());
+                        } else {
+                            System.out.println("No website provided for " + church.getName());
                         }
-                    } else {
-                        System.out.println("No website provided for " + church.getName());
-                    }
 
-                    // Update progress bar
-                    progress++;
-                    progressBarDialog.updateProgress(progress, found, churches.size());
+                        synchronized (progress) {
+                            progress[0]++;
+                            progressBarDialog.updateProgress(progress[0], found[0], churches.size());
+                        }
+                    });
+                }
+
+                executorService.shutdown();
+                try {
+                    executorService.awaitTermination(60, TimeUnit.MINUTES);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
 
                 return null;
@@ -70,37 +85,29 @@ public class StaticWebScraper {
 
             @Override
             protected void done() {
-                progressBarDialog.dispose(); // Close the progress dialog when scraping is complete
-
+                progressBarDialog.dispose();
                 if (!progressBarDialog.isCancelled()) {
                     if (onCompletion != null) {
-                        onCompletion.run(); // Trigger the PCO check
+                        onCompletion.run();
                     }
-                    SuccessDialog.showNotificationDialog(parentComponent, "Scraping found some data");
+                    SuccessDialog.showNotificationDialog(parentComponent, "Scraping completed successfully.");
                 }
             }
         };
 
         worker.execute();
-        progressBarDialog.setVisible(true); // Display the progress bar
+        progressBarDialog.setVisible(true);
     }
 
     private static List<String> extractEmails(Document doc) {
         List<String> emails = new ArrayList<>();
-
-        // Step 1: Find all mailto links
         emails.addAll(extractEmailsFromMailto(doc));
-
-        // If we found emails using mailto, return them
         if (!emails.isEmpty()) {
             return emails;
         }
 
-        // Step 2: Check for email-like patterns in the entire document text
         String text = doc.text();
         extractEmailsFromText(text, emails);
-
-        // Return the list of found emails (could be empty if none were found)
         return emails;
     }
 
@@ -108,6 +115,7 @@ public class StaticWebScraper {
         List<String> emails = new ArrayList<>();
         for (var element : doc.select("a[href^=mailto:]")) {
             String email = element.attr("href").replace("mailto:", "").trim();
+            email = email.split("[?=]")[0].trim();
             cleanEmail(email, emails);
         }
         return emails;
@@ -130,7 +138,6 @@ public class StaticWebScraper {
     }
 
     private static void logError(String message) {
-        // Log the error message to the console or a log file
-        System.err.println(message); // Change this to logging to a file if needed
+        System.err.println(message);
     }
 }

@@ -45,59 +45,64 @@ public class GooglePlacesAPI {
 	public static List<GooglePlacesApiData> getChurchDetails(Config config, List<GooglePlacesApiData> churches) {
 		List<GooglePlacesApiData> results = new ArrayList<>();
 
-		// Create a thread pool with a fixed number of threads
-		ExecutorService executorService = Executors.newFixedThreadPool(config.getThreadPoolSize()); // Use an
-																									// appropriate
-																									// thread count
-
-		// Create a list of Futures to store the results of the asynchronous tasks
+		int threads = Runtime.getRuntime().availableProcessors();
+		ExecutorService executorService = Executors.newFixedThreadPool(threads); // Use an appropriate thread count
 		List<Future<GooglePlacesApiData>> futures = new ArrayList<>();
 
 		for (GooglePlacesApiData church : churches) {
-			// For each church, submit a Callable to the ExecutorService
-			Future<GooglePlacesApiData> future = executorService.submit(new Callable<GooglePlacesApiData>() {
-				@Override
-				public GooglePlacesApiData call() throws Exception {
-					String placeId = church.getPlaceId();
-					String detailsUrl = String.format("%sdetails/json?place_id=%s&key=%s", config.getGooglePlacesUrl(),
-							placeId, config.getGooglePlacesApiKey());
+			// Check if the church already has a phone number or a website
+			if (church.getPhoneNumber() == null || church.getPhoneNumber().isEmpty() ||
+					church.getWebsite() == null || church.getWebsite().isEmpty()) {
 
-					URL url = new URL(detailsUrl);
-					HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-					conn.setRequestMethod("GET");
+				// For each church, submit a Callable to the ExecutorService
+				Future<GooglePlacesApiData> future = executorService.submit(new Callable<GooglePlacesApiData>() {
+					@Override
+					public GooglePlacesApiData call() throws Exception {
+						String placeId = church.getPlaceId();
+						String detailsUrl = String.format("%sdetails/json?place_id=%s&key=%s",
+								config.getGooglePlacesUrl(),
+								placeId, config.getGooglePlacesApiKey());
 
-					BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-					StringBuilder content = new StringBuilder();
-					String inputLine;
-					while ((inputLine = in.readLine()) != null) {
-						content.append(inputLine);
+						URL url = new URL(detailsUrl);
+						HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+						conn.setRequestMethod("GET");
+
+						BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+						StringBuilder content = new StringBuilder();
+						String inputLine;
+						while ((inputLine = in.readLine()) != null) {
+							content.append(inputLine);
+						}
+						in.close();
+						conn.disconnect();
+
+						ObjectMapper objectMapper = new ObjectMapper();
+						JsonNode rootNode = objectMapper.readTree(content.toString());
+						JsonNode resultNode = rootNode.path("result");
+
+						System.out.println("Getting data for: " + resultNode.path("name").asText());
+
+						GooglePlacesApiData churchDetails = new GooglePlacesApiData();
+						churchDetails.setPlaceId(placeId);
+						churchDetails.setName(StringHelpers.removeCommas(resultNode.path("name").asText()));
+						churchDetails
+								.setAddress(StringHelpers.removeCommas(resultNode.path("formatted_address").asText()));
+						churchDetails.setPhoneNumber(resultNode.path("formatted_phone_number").asText());
+						churchDetails.setWebsite(resultNode.path("website").asText());
+						churchDetails.setEmail(resultNode.path("email").asText());
+						churchDetails.setRating(resultNode.path("rating").asText());
+						churchDetails.setUserRatingsTotal(resultNode.path("user_ratings_total").asText());
+
+						return churchDetails;
 					}
-					in.close();
-					conn.disconnect();
+				});
 
-					ObjectMapper objectMapper = new ObjectMapper();
-					JsonNode rootNode = objectMapper.readTree(content.toString());
-					JsonNode resultNode = rootNode.path("result");
-
-					System.out.println("Getting data for : " + resultNode.path("name").asText());
-
-					GooglePlacesApiData churchDetails = new GooglePlacesApiData();
-
-					churchDetails.setPlaceId(placeId);
-					churchDetails.setName(StringHelpers.removeCommas(resultNode.path("name").asText()));
-					churchDetails.setAddress(StringHelpers.removeCommas(resultNode.path("formatted_address").asText()));
-					churchDetails.setPhoneNumber(resultNode.path("formatted_phone_number").asText());
-					churchDetails.setWebsite(resultNode.path("website").asText());
-					churchDetails.setEmail(resultNode.path("email").asText());
-					churchDetails.setRating(resultNode.path("rating").asText());
-					churchDetails.setUserRatingsTotal(resultNode.path("user_ratings_total").asText());
-
-					return churchDetails;
-				}
-			});
-
-			// Add the future to the list
-			futures.add(future);
+				// Add the future to the list
+				futures.add(future);
+			} else {
+				// If phone number or website already exists, add the existing church to results
+				results.add(church);
+			}
 		}
 
 		// Wait for all the tasks to complete and gather results

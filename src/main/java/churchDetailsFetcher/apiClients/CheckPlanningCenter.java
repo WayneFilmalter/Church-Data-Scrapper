@@ -3,20 +3,19 @@ package churchDetailsFetcher.apiClients;
 import java.awt.Component;
 import java.io.IOException;
 import java.util.List;
-
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import javax.swing.JFrame;
 import javax.swing.SwingWorker;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
-
 import churchDetailsFetcher.dialog.ProgressBarDialog;
 import churchDetailsFetcher.types.ChurchDataTableModel;
 import churchDetailsFetcher.types.ChurchTableData;
@@ -30,50 +29,82 @@ public class CheckPlanningCenter {
         ProgressBarDialog progressBarDialog = new ProgressBarDialog((JFrame) parentComponent, "Finding PCO Links");
         progressBarDialog.setProgressMax(churches.size());
 
-        // Use SwingWorker to handle background scraping process
+        // Executor service for concurrent execution
+        int threads = Runtime.getRuntime().availableProcessors(); // Number of threads based on CPU cores
+
+        System.out.println(threads);
+        ExecutorService executorService = Executors.newFixedThreadPool(threads);
+
+        // Use SwingWorker to handle background processing
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() {
-                int progress = 0;
-                int found = 0;
+                int[] progress = { 0 }; // Use an array to allow modification within lambda
+                int[] found = { 0 }; // Track found links
 
                 for (ChurchTableData church : churches) {
                     if (progressBarDialog.isCancelled()) {
                         System.out.println("PCO checking canceled.");
-                        break; // Exit the loop if PCO checking is canceled
+                        break;
                     }
 
-                    String website = church.getWebsite();
-                    if (website != null && !website.isEmpty()) {
-                        try {
-                            // First attempt using Jsoup
-                            if (checkPlanningCenterWithJsoup(website)) {
-                                church.setHasPCO(true); // Update the church data to indicate PCO is found
-                                found++;
-                                System.out.println("Found Planning Center link for " + church.getName());
-                            } else {
-                                System.out.println("No Planning Center link found with Jsoup for " + church.getName());
-                                // If Jsoup doesn't find anything, try Playwright
-                                if (checkPlanningCenterWithPlaywright(website)) {
+                    // Submit each church check as a separate task
+                    executorService.submit(() -> {
+                        String website = church.getWebsite();
+                        if (website != null && !website.isEmpty()) {
+                            try {
+                                boolean hasPCO = false;
+
+                                // First attempt using Jsoup
+                                if (checkPlanningCenterWithJsoup(website)) {
                                     church.setHasPCO(true);
-                                    found++;
-                                    System.out.println(
-                                            "Found Planning Center link for " + church.getName() + " using Playwright");
+                                    hasPCO = true;
+                                    synchronized (found) {
+                                        found[0]++;
+                                    }
+                                    System.out.println("Found Planning Center link for " + church.getName());
                                 } else {
-                                    System.out.println("No Planning Center link found for " + church.getName()
-                                            + " using Playwright");
+                                    System.out.println(
+                                            "No Planning Center link found with Jsoup for " + church.getName());
+                                    // If Jsoup doesn't find anything, try Playwright
+                                    if (checkPlanningCenterWithPlaywright(website)) {
+                                        church.setHasPCO(true);
+                                        hasPCO = true;
+                                        synchronized (found) {
+                                            found[0]++;
+                                        }
+                                        System.out.println("Found Planning Center link for " + church.getName()
+                                                + " using Playwright");
+                                    } else {
+                                        System.out.println("No Planning Center link found for " + church.getName()
+                                                + " using Playwright");
+                                    }
                                 }
-                            }
-                        } catch (IOException e) {
-                            System.out.println("Error connecting to " + website + ": " + e.getMessage());
-                        }
-                    } else {
-                        System.out.println("No website provided for " + church.getName());
-                    }
 
-                    // Update progress bar
-                    progress++;
-                    progressBarDialog.updateProgress(progress, found, churches.size());
+                                synchronized (progress) {
+                                    progress[0]++;
+                                    progressBarDialog.updateProgress(progress[0], found[0], churches.size());
+                                }
+
+                            } catch (IOException e) {
+                                System.out.println("Error connecting to " + website + ": " + e.getMessage());
+                            }
+                        } else {
+                            System.out.println("No website provided for " + church.getName());
+                            synchronized (progress) {
+                                progress[0]++;
+                                progressBarDialog.updateProgress(progress[0], found[0], churches.size());
+                            }
+                        }
+                    });
+                }
+
+                // Wait for all tasks to complete
+                executorService.shutdown();
+                try {
+                    executorService.awaitTermination(60, TimeUnit.MINUTES);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
 
                 return null;
@@ -82,9 +113,7 @@ public class CheckPlanningCenter {
             @Override
             protected void done() {
                 progressBarDialog.dispose(); // Close the progress dialog when PCO checking is complete
-
                 if (!progressBarDialog.isCancelled()) {
-                    // Show notification or handle completion
                     System.out.println("PCO checking completed.");
                 }
                 tableModel.setCheckPCOdone(true);
@@ -109,7 +138,7 @@ public class CheckPlanningCenter {
             BrowserContext context = browser.newContext();
             Page page = context.newPage();
 
-            page.navigate(website, new Page.NavigateOptions().setTimeout(60000)); // 30 seconds timeout
+            page.navigate(website, new Page.NavigateOptions().setTimeout(100000)); // 30 seconds timeout
             Document doc = Jsoup.parse(page.content()); // Convert Playwright page content to Jsoup Document
 
             boolean found = containsPlanningCenter(doc);
@@ -124,7 +153,6 @@ public class CheckPlanningCenter {
 
     // Method to check if the document contains Planning Center links
     private static boolean containsPlanningCenter(Document doc) {
-        // Check for links that contain "planningcenter.com" or "churchcenter.com"
         for (Element link : doc.select("a[href]")) {
             String href = link.attr("href");
             if (href.contains("planningcenter.com") || href.contains("churchcenter.com")) {

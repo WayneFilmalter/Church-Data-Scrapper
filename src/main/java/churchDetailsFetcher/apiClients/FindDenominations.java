@@ -8,7 +8,12 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JFrame;
 import javax.swing.SwingWorker;
@@ -29,84 +34,82 @@ public class FindDenominations {
 		List<ChurchTableData> churches = tableModel.getTableData(); // Assuming you have a method to get church data
 
 		List<String> denominations = Arrays.asList("Baptist", "Catholic", "Presbyterian", "Methodist", "Lutheran",
-				"Pentecostal", "NG", "Angligan", "Dutch Reformed");
+				"Pentecostal", "NG", "Anglican", "Dutch Reformed");
 
 		// Create and display the custom ProgressBarDialog
 		ProgressBarDialog progressBarDialog = new ProgressBarDialog((JFrame) parentComponent, "Finding Denominations");
 		progressBarDialog.setProgressMax(churches.size());
 
-		// Use SwingWorker to handle the background scraping process
-		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-			@Override
-			protected Void doInBackground() {
-				int progress = 0;
-				int found = 0;
+		// Use an ExecutorService to handle the scraping in parallel
+		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		List<Future<Void>> futures = new ArrayList<>();
+		AtomicInteger progress = new AtomicInteger(0); // For thread-safe progress updates
+		AtomicInteger found = new AtomicInteger(0); // For thread-safe count of found denominations
 
-				for (ChurchTableData church : churches) {
-					if (progressBarDialog.isCancelled()) {
-						System.out.println("Denomination scraping canceled.");
-						break;
-					}
-
-					String churchName = church.getName();
-					if (churchName != null && !churchName.isEmpty()) {
-						String denomination = getDenominationByChurchName(churchName);
-						if (denomination != null && !denomination.isEmpty()) {
-							church.setDenomination(StringHelpers.capCaseString(denomination)); // Update the church data
-																								// with the denomination
-							found++;
-							System.out.println("Found denomination for " + church.getName() + ": " + denomination);
-						} else {
-							for (String denominationName : denominations) {
-								if (churchName.toLowerCase().contains(denominationName.toLowerCase())) {
-
-									if (denominationName.equalsIgnoreCase("Dutch Reformed")
-											|| denominationName.equalsIgnoreCase("Nederduitse Gereformeerde")) {
-
-										church.setDenomination("NG");
-										System.out
-												.println("Found denomination in name for " + church.getName() + ": NG");
-
-									} else {
-
-										church.setDenomination(denominationName);
-										System.out.println("Found denomination in name for " + church.getName()
-												+ denominationName);
-									}
-								}
-
-							}
-
-							System.out.println("No denomination found for " + church.getName());
-						}
-					} else {
-						System.out.println("No church name provided for " + church.getName());
-					}
-
-					// Update progress bar
-					progress++;
-					progressBarDialog.updateProgress(progress, found, churches.size());
+		for (ChurchTableData church : churches) {
+			// Submit each scraping task to the executor service
+			futures.add(executorService.submit(() -> {
+				if (progressBarDialog.isCancelled()) {
+					return null; // Exit if cancelled
 				}
 
-				return null;
-			}
+				String churchName = church.getName();
+				if (churchName != null && !churchName.isEmpty()) {
+					String denomination = getDenominationByChurchName(churchName);
+					if (denomination != null && !denomination.isEmpty()) {
+						church.setDenomination(StringHelpers.capCaseString(denomination)); // Update the church data
+						found.incrementAndGet(); // Increment found count
+						System.out.println("Found denomination for " + church.getName() + ": " + denomination);
+					} else {
+						for (String denominationName : denominations) {
+							if (churchName.toLowerCase().contains(denominationName.toLowerCase())) {
+								if (denominationName.equalsIgnoreCase("Dutch Reformed")
+										|| denominationName.equalsIgnoreCase("Nederduitse Gereformeerde")) {
+									church.setDenomination("NG");
+									System.out.println("Found denomination in name for " + church.getName() + ": NG");
+								} else {
+									church.setDenomination(denominationName);
+									System.out.println("Found denomination in name for " + church.getName() + ": "
+											+ denominationName);
+								}
+							}
+						}
+						System.out.println("No denomination found for " + church.getName());
+					}
+				} else {
+					System.out.println("No church name provided for " + church.getName());
+				}
 
-			@Override
-			protected void done() {
+				// Update progress bar
+				int currentProgress = progress.incrementAndGet();
+				progressBarDialog.updateProgress(currentProgress, found.get(), churches.size());
+
+				return null; // Return null as required by Future<Void>
+			}));
+		}
+
+		// Use a separate thread to monitor the completion of all tasks
+		new Thread(() -> {
+			try {
+				for (Future<Void> future : futures) {
+					future.get(); // Wait for each task to complete
+				}
+			} catch (Exception e) {
+				System.err.println("Error while waiting for tasks to complete: " + e.getMessage());
+			} finally {
+				executorService.shutdown(); // Shutdown the executor service
 				progressBarDialog.dispose(); // Close the progress dialog when scraping is complete
 
 				if (!progressBarDialog.isCancelled()) {
 					// Show notification or handle completion
-
 					if (onCompletion != null) {
 						onCompletion.run(); // Trigger the PCO check
 					}
 					System.out.println("Denomination scraping completed.");
 				}
 			}
-		};
+		}).start();
 
-		worker.execute();
 		progressBarDialog.setVisible(true); // Display the progress bar
 	}
 

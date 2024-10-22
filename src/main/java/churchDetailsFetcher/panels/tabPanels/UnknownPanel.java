@@ -19,14 +19,17 @@ public class UnknownPanel extends JPanel {
         add(button);
 
         button.addActionListener(e -> {
-            System.out.println("Start ");
-            List<OverPassApiData.Element> cities = LocationData.getCitiesForState("South Africa", "Free State");
 
-            System.out.println("Done ");
-            for (OverPassApiData.Element city : cities) {
+            System.out.println("threads " + Runtime.getRuntime().availableProcessors());
+            // List<OverPassApiData.Element> cities = LocationData.getCitiesForState("South
+            // Africa", "Free State");
 
-                System.out.println(city.getTags().getName());
-            }
+            // System.out.println("Done ");
+            // for (OverPassApiData.Element city : cities) {
+
+            // System.out.println(city.getTags().getName());
+            // }
+
         });
     }
 }
